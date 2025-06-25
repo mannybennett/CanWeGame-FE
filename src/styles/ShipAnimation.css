@@ -1,0 +1,22 @@
+.logo-animation-container {
+  position: relative;
+  height: 500px;
+  margin-top: 1rem;
+}
+
+.ship {
+  position: absolute;
+  top: 400px;
+  transition: left 0.1s linear;
+}
+
+#shipSize {
+  width: 60px;
+  height: 60px;
+}
+
+.bullet {
+  position: absolute;
+  width: 10px;
+  height: 20px;
+}

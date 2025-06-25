@@ -1,10 +1,11 @@
-// import { useState } from 'react';
+import LandingPage from './pages/LandingPage';
+import './styles/App.css'
 
 function App() {
 
   return (
     <>
-      <div>Test</div>
+      <LandingPage/>
     </>
   )
 };

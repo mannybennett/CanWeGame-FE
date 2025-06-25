@@ -23,7 +23,7 @@ api.interceptors.request.use(
     }
 );
 
-// Response interceptor for handling 401/403 (optional, can be done in context too)
+// Response interceptor for handling 401/403
 api.interceptors.response.use(
     (response) => response,
     (error) => {
