@@ -121,7 +121,7 @@ export default function LandingPage() {
             </h1>
           </section>
           <section className="ship-container" ref={shipContainerRef}>
-            <ShipAnimation logoRef={logoRef}/>
+            {/* <ShipAnimation logoRef={logoRef}/> */}
           </section>
         </div>
 
@@ -337,7 +337,7 @@ export default function LandingPage() {
                           onClick={() => togglePasswordVisibility("login")}
                           className="password-toggle"
                         >
-                          {showLoginPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                          {showLoginPassword ? <Eye size={20} /> : <EyeOff size={20} />}
                         </button>
                       </div>
                     </div>
@@ -405,7 +405,7 @@ export default function LandingPage() {
                           onClick={() => togglePasswordVisibility("register")}
                           className="password-toggle"
                         >
-                          {showRegisterPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                          {showRegisterPassword ? <Eye size={20} /> : <EyeOff size={20} />}
                         </button>
                       </div>
                     </div>
@@ -427,7 +427,7 @@ export default function LandingPage() {
                           onClick={() => togglePasswordVisibility("confirm")}
                           className="password-toggle"
                         >
-                          {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                          {showConfirmPassword ? <Eye size={20} /> : <EyeOff size={20} />}
                         </button>
                       </div>
                     </div>
