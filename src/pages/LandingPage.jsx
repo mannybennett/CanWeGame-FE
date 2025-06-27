@@ -5,6 +5,8 @@ import ShipAnimation from "../components/ShipAnimation";
 
 export default function LandingPage() {
   const logoRef = useRef(null);
+  const shipContainerRef = useRef(null);
+
 
   const [loginData, setLoginData] = useState({
     username: "",
@@ -39,6 +41,20 @@ export default function LandingPage() {
     window.addEventListener("resize", checkMobile)
     return () => window.removeEventListener("resize", checkMobile)
   }, [])
+
+  useEffect(() => {
+    const updateWidth = () => {
+      if (logoRef.current && shipContainerRef.current) {
+        const logoWidth = logoRef.current.offsetWidth;
+        shipContainerRef.current.style.width = `${logoWidth}px`;
+      }
+    };
+
+    updateWidth(); // initial
+    window.addEventListener('resize', updateWidth);
+    return () => window.removeEventListener('resize', updateWidth);
+  }, []);
+
 
   const handleTouchStart = (e) => {
     touchStartX.current = e.targetTouches[0].clientX
@@ -90,19 +106,23 @@ export default function LandingPage() {
   }
 
   return (
-    <div className="landing-page">
+    <main className="landing-page">
       <div className="main-container">
         {/* Left Section - 2/3 */}
         <div className="logo-section">
-          <div className="logo-container" ref={logoRef}>
-            <h2 id="slogan">More Gaming, Less Planning.</h2>
+          <section className="slogan-container">
+            <h2 className="slogan">More Gaming, Less Planning.</h2>
+          </section>
+          <section className="logo-container" ref={logoRef}>
             <h1 className="main-logo">
               <span className="logo-canwe">canwe</span>
               <span className="logo-game">game</span>
               <span className="logo-com">.com</span>
             </h1>
+          </section>
+          <section className="ship-container" ref={shipContainerRef}>
             <ShipAnimation logoRef={logoRef}/>
-          </div>
+          </section>
         </div>
 
         {/* Vertical Separator - Hidden on mobile */}
@@ -172,7 +192,7 @@ export default function LandingPage() {
                               onClick={() => togglePasswordVisibility("login")}
                               className="password-toggle"
                             >
-                              {showLoginPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                              {showLoginPassword ? <Eye size={20} /> : <EyeOff size={20} />}
                             </button>
                           </div>
                         </div>
@@ -236,7 +256,7 @@ export default function LandingPage() {
                               onClick={() => togglePasswordVisibility("register")}
                               className="password-toggle"
                             >
-                              {showRegisterPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                              {showRegisterPassword ? <Eye size={20} /> : <EyeOff size={20} />}
                             </button>
                           </div>
                         </div>
@@ -258,7 +278,7 @@ export default function LandingPage() {
                               onClick={() => togglePasswordVisibility("confirm")}
                               className="password-toggle"
                             >
-                              {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                              {showConfirmPassword ? <Eye size={20} /> : <EyeOff size={20} />}
                             </button>
                           </div>
                         </div>
@@ -274,7 +294,9 @@ export default function LandingPage() {
               {/* Swipe hint text */}
               <p className="swipe-hint">Swipe left or right to switch forms</p>
             </div>
+
           ) : (
+
             // Desktop: Stacked forms with separator
             <div className="desktop-forms">
               {/* Login Form */}
@@ -419,6 +441,6 @@ export default function LandingPage() {
           )}
         </div>
       </div>
-    </div>
+    </main>
   )
 };

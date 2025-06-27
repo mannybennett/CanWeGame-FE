@@ -1,12 +1,11 @@
 .logo-animation-container {
+  height: 100%;
   position: relative;
-  height: 500px;
-  margin-top: 1rem;
 }
 
 .ship {
   position: absolute;
-  top: 400px;
+  top: 80%;
   transition: left 0.1s linear;
 }
 

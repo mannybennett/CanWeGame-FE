@@ -15,7 +15,7 @@ export default function ShipAnimation({ logoRef }) {
     if (animationStarted.current || !logoRef.current) return;
     animationStarted.current = true;
 
-    const mainLogo = logoRef.current.querySelector(".main-logo");
+    const mainLogo = logoRef.current;
     if (!mainLogo) return;
     let currentIndex = 0;
     const logoWidth = mainLogo.offsetWidth;
