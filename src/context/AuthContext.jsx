@@ -55,7 +55,7 @@ const AuthProvider = ({ children }) => {
 		}
 	};
 
-	const register = async (email, username, password) => {
+	const register = async ({ email, username, password }) => {
 		setLoadingAuth(true);
 		try {
 			await authService.register(email, username, password);

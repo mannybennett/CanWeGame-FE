@@ -1,12 +1,15 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useContext } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { AuthContext } from "../context/AuthContext";
 import "../styles/LandingPage.css";
 // import ShipAnimation from "../components/ShipAnimation";
 
 export default function LandingPage() {
+  const { register } = useContext(AuthContext);
+  // refs
   const logoRef = useRef(null);
   const shipContainerRef = useRef(null);
+  // Login/Register states
   const [loginData, setLoginData] = useState({ username: "", password: "" })
   const [registerData, setRegisterData] = useState({ email: "", username: "", password: "", confirmPassword: "" })
   // Password visibility states
@@ -73,11 +76,17 @@ export default function LandingPage() {
   }
 
   const handleRegisterSubmit = (e) => {
-    e.preventDefault()
-    // registerData.email etc...
-    AuthContext.register()
-    console.log("Register submitted:", registerData)
-  }
+    e.preventDefault();
+    const { email, username, password, confirmPassword } = registerData;
+    if (password !== confirmPassword) {
+      console.error("Passwords do not match!");
+      // display message on UI
+      return;
+    };
+    const confirmedData = { email, username, password }; 
+    register(confirmedData);
+    console.log("Register submitted:", confirmedData);
+  };
 
   const togglePasswordVisibility = (field) => {
     switch (field) {
@@ -159,7 +168,11 @@ export default function LandingPage() {
                             id="login-username"
                             type="text"
                             value={loginData.username}
-                            onChange={(e) => setLoginData({ ...loginData, username: e.target.value })}
+                            onChange={(e) => {
+                              // Remove spaces from the input before updating state
+                              const newValue = e.target.value.replace(/\s/g, '');
+                              setRegisterData({ ...registerData, username: newValue });
+                            }}
                             className="input-field"
                             required
                           />
@@ -224,7 +237,10 @@ export default function LandingPage() {
                             id="register-username"
                             type="text"
                             value={registerData.username}
-                            onChange={(e) => setRegisterData({ ...registerData, username: e.target.value })}
+                            onChange={(e) => {
+                              const newValue = e.target.value.replace(/\s/g, '');
+                              setRegisterData({ ...registerData, username: newValue });
+                            }}
                             className="input-field"
                             required
                           />
@@ -303,7 +319,10 @@ export default function LandingPage() {
                         id="login-username-desktop"
                         type="text"
                         value={loginData.username}
-                        onChange={(e) => setLoginData({ ...loginData, username: e.target.value })}
+                        onChange={(e) => {
+                          const newValue = e.target.value.replace(/\s/g, '');
+                          setRegisterData({ ...registerData, username: newValue });
+                        }}
                         className="input-field"
                         required
                       />
@@ -371,7 +390,10 @@ export default function LandingPage() {
                         id="register-username-desktop"
                         type="text"
                         value={registerData.username}
-                        onChange={(e) => setRegisterData({ ...registerData, username: e.target.value })}
+                        onChange={(e) => {
+                          const newValue = e.target.value.replace(/\s/g, '');
+                          setRegisterData({ ...registerData, username: newValue });
+                        }}
                         className="input-field"
                         required
                       />
