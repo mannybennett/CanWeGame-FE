@@ -5,7 +5,7 @@ import "../styles/LandingPage.css";
 // import ShipAnimation from "../components/ShipAnimation";
 
 export default function LandingPage() {
-  const { register } = useContext(AuthContext);
+  const { login, register } = useContext(AuthContext);
   // refs
   const logoRef = useRef(null);
   const shipContainerRef = useRef(null);
@@ -71,9 +71,10 @@ export default function LandingPage() {
   }
 
   const handleLoginSubmit = (e) => {
-    e.preventDefault()
-    console.log("Login submitted:", loginData)
-  }
+    e.preventDefault();
+    login(loginData.username, loginData.password);
+    console.log("Login submitted:", loginData);
+  };
 
   const handleRegisterSubmit = (e) => {
     e.preventDefault();
@@ -171,7 +172,7 @@ export default function LandingPage() {
                             onChange={(e) => {
                               // Remove spaces from the input before updating state
                               const newValue = e.target.value.replace(/\s/g, '');
-                              setRegisterData({ ...registerData, username: newValue });
+                              setLoginData({ ...registerData, username: newValue });
                             }}
                             className="input-field"
                             required
@@ -321,7 +322,7 @@ export default function LandingPage() {
                         value={loginData.username}
                         onChange={(e) => {
                           const newValue = e.target.value.replace(/\s/g, '');
-                          setRegisterData({ ...registerData, username: newValue });
+                          setLoginData({ ...registerData, username: newValue });
                         }}
                         className="input-field"
                         required
