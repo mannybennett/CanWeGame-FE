@@ -8,7 +8,7 @@ const AuthProvider = ({ children }) => {
 	const [user, setUser] = useState(null);
 	const [token, setToken] = useState(localStorage.getItem('jwtToken'));
 	const [isAuthenticated, setIsAuthenticated] = useState(!!token);
-	const [loadingAuth, setLoadingAuth] = useState(true); // New state for initial auth check
+	const [loadingAuth, setLoadingAuth] = useState(true);
 
 	// Set up Axios interceptor to automatically add JWT to requests
 	useEffect(() => {
@@ -55,12 +55,10 @@ const AuthProvider = ({ children }) => {
 		}
 	};
 
-	const register = async (username, password) => {
+	const register = async (email, username, password) => {
 		setLoadingAuth(true);
 		try {
-			await authService.register(username, password); // <--- Use authService
-			// After successful registration, you might want to automatically log in
-			// or redirect to the login page. For now, just return success.
+			await authService.register(email, username, password);
 			return true;
 		} catch (error) {
 			console.error("Registration process failed:", error);

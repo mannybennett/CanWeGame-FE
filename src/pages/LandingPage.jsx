@@ -1,30 +1,18 @@
 import { useState, useRef, useEffect } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import { AuthContext } from "../context/AuthContext";
 import "../styles/LandingPage.css";
-import ShipAnimation from "../components/ShipAnimation";
+// import ShipAnimation from "../components/ShipAnimation";
 
 export default function LandingPage() {
   const logoRef = useRef(null);
   const shipContainerRef = useRef(null);
-
-
-  const [loginData, setLoginData] = useState({
-    username: "",
-    password: "",
-  })
-
-  const [registerData, setRegisterData] = useState({
-    username: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  })
-
+  const [loginData, setLoginData] = useState({ username: "", password: "" })
+  const [registerData, setRegisterData] = useState({ email: "", username: "", password: "", confirmPassword: "" })
   // Password visibility states
   const [showLoginPassword, setShowLoginPassword] = useState(false)
   const [showRegisterPassword, setShowRegisterPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-
   // Mobile swipe functionality
   const [currentForm, setCurrentForm] = useState(0) // 0 for login, 1 for register
   const [isMobile, setIsMobile] = useState(false)
@@ -50,7 +38,7 @@ export default function LandingPage() {
       }
     };
 
-    updateWidth(); // initial
+    updateWidth();
     window.addEventListener('resize', updateWidth);
     return () => window.removeEventListener('resize', updateWidth);
   }, []);
@@ -86,6 +74,8 @@ export default function LandingPage() {
 
   const handleRegisterSubmit = (e) => {
     e.preventDefault()
+    // registerData.email etc...
+    AuthContext.register()
     console.log("Register submitted:", registerData)
   }
 
@@ -201,6 +191,7 @@ export default function LandingPage() {
                         </button>
                       </form>
                     </div>
+                    <p className="swipe-hint">Swipe right to register</p>
                   </div>
                 </div>
 
@@ -213,19 +204,6 @@ export default function LandingPage() {
                     <div className="form-content">
                       <form onSubmit={handleRegisterSubmit} className="form">
                         <div className="input-group">
-                          <label htmlFor="register-username" className="input-label">
-                            Username
-                          </label>
-                          <input
-                            id="register-username"
-                            type="text"
-                            value={registerData.username}
-                            onChange={(e) => setRegisterData({ ...registerData, username: e.target.value })}
-                            className="input-field"
-                            required
-                          />
-                        </div>
-                        <div className="input-group">
                           <label htmlFor="register-email" className="input-label">
                             Email
                           </label>
@@ -234,6 +212,19 @@ export default function LandingPage() {
                             type="email"
                             value={registerData.email}
                             onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })}
+                            className="input-field"
+                            required
+                          />
+                        </div>
+                        <div className="input-group">
+                          <label htmlFor="register-username" className="input-label">
+                            Username
+                          </label>
+                          <input
+                            id="register-username"
+                            type="text"
+                            value={registerData.username}
+                            onChange={(e) => setRegisterData({ ...registerData, username: e.target.value })}
                             className="input-field"
                             required
                           />
@@ -287,12 +278,10 @@ export default function LandingPage() {
                         </button>
                       </form>
                     </div>
+                    <p className="swipe-hint">Swipe left to log in</p>
                   </div>
                 </div>
               </div>
-
-              {/* Swipe hint text */}
-              <p className="swipe-hint">Swipe left or right to switch forms</p>
             </div>
 
           ) : (
@@ -362,19 +351,6 @@ export default function LandingPage() {
                 <div className="form-content">
                   <form onSubmit={handleRegisterSubmit} className="form">
                     <div className="input-group">
-                      <label htmlFor="register-username-desktop" className="input-label">
-                        Username
-                      </label>
-                      <input
-                        id="register-username-desktop"
-                        type="text"
-                        value={registerData.username}
-                        onChange={(e) => setRegisterData({ ...registerData, username: e.target.value })}
-                        className="input-field"
-                        required
-                      />
-                    </div>
-                    <div className="input-group">
                       <label htmlFor="register-email-desktop" className="input-label">
                         Email
                       </label>
@@ -383,6 +359,19 @@ export default function LandingPage() {
                         type="email"
                         value={registerData.email}
                         onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })}
+                        className="input-field"
+                        required
+                      />
+                    </div>
+                    <div className="input-group">
+                      <label htmlFor="register-username-desktop" className="input-label">
+                        Username
+                      </label>
+                      <input
+                        id="register-username-desktop"
+                        type="text"
+                        value={registerData.username}
+                        onChange={(e) => setRegisterData({ ...registerData, username: e.target.value })}
                         className="input-field"
                         required
                       />
