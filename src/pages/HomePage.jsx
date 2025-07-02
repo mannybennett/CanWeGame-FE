@@ -180,13 +180,13 @@ export default function HomePage() {
                 className="search-input"
               />
               <button type="submit" className="search-submit">
-                <Search size={16} />
+                <ArrowRight size={16} />
               </button>
             </div>
           </form>
 
           {/* Schedule Button */}
-          <button className="schedule-button mobile-schedule" onClick={handleAddSchedule}>
+          <button className="mobile-schedule-button" onClick={handleAddSchedule}>
             <Plus size={16} />
             Schedule
           </button>
@@ -227,78 +227,6 @@ export default function HomePage() {
         <section className="schedules-section">
           <h2 className="section-title">Friends Schedules</h2>
           <div className="friends-schedules-grid">
-            {friendsSchedules.map((schedule) => (
-              <div key={schedule.id} className="friend-schedule-card">
-                <div className="friend-username">{schedule.username}</div>
-                <div className="game-title">{schedule.game}</div>
-                <div className="time-range">{schedule.timeRange}</div>
-                <div className="date-range">{schedule.dateRange}</div>
-              </div>
-            ))}
-            {friendsSchedules.map((schedule) => (
-              <div key={schedule.id} className="friend-schedule-card">
-                <div className="friend-username">{schedule.username}</div>
-                <div className="game-title">{schedule.game}</div>
-                <div className="time-range">{schedule.timeRange}</div>
-                <div className="date-range">{schedule.dateRange}</div>
-              </div>
-            ))}
-            {friendsSchedules.map((schedule) => (
-              <div key={schedule.id} className="friend-schedule-card">
-                <div className="friend-username">{schedule.username}</div>
-                <div className="game-title">{schedule.game}</div>
-                <div className="time-range">{schedule.timeRange}</div>
-                <div className="date-range">{schedule.dateRange}</div>
-              </div>
-            ))}
-            {friendsSchedules.map((schedule) => (
-              <div key={schedule.id} className="friend-schedule-card">
-                <div className="friend-username">{schedule.username}</div>
-                <div className="game-title">{schedule.game}</div>
-                <div className="time-range">{schedule.timeRange}</div>
-                <div className="date-range">{schedule.dateRange}</div>
-              </div>
-            ))}
-            {friendsSchedules.map((schedule) => (
-              <div key={schedule.id} className="friend-schedule-card">
-                <div className="friend-username">{schedule.username}</div>
-                <div className="game-title">{schedule.game}</div>
-                <div className="time-range">{schedule.timeRange}</div>
-                <div className="date-range">{schedule.dateRange}</div>
-              </div>
-            ))}
-            {friendsSchedules.map((schedule) => (
-              <div key={schedule.id} className="friend-schedule-card">
-                <div className="friend-username">{schedule.username}</div>
-                <div className="game-title">{schedule.game}</div>
-                <div className="time-range">{schedule.timeRange}</div>
-                <div className="date-range">{schedule.dateRange}</div>
-              </div>
-            ))}
-            {friendsSchedules.map((schedule) => (
-              <div key={schedule.id} className="friend-schedule-card">
-                <div className="friend-username">{schedule.username}</div>
-                <div className="game-title">{schedule.game}</div>
-                <div className="time-range">{schedule.timeRange}</div>
-                <div className="date-range">{schedule.dateRange}</div>
-              </div>
-            ))}
-            {friendsSchedules.map((schedule) => (
-              <div key={schedule.id} className="friend-schedule-card">
-                <div className="friend-username">{schedule.username}</div>
-                <div className="game-title">{schedule.game}</div>
-                <div className="time-range">{schedule.timeRange}</div>
-                <div className="date-range">{schedule.dateRange}</div>
-              </div>
-            ))}
-            {friendsSchedules.map((schedule) => (
-              <div key={schedule.id} className="friend-schedule-card">
-                <div className="friend-username">{schedule.username}</div>
-                <div className="game-title">{schedule.game}</div>
-                <div className="time-range">{schedule.timeRange}</div>
-                <div className="date-range">{schedule.dateRange}</div>
-              </div>
-            ))}
             {friendsSchedules.map((schedule) => (
               <div key={schedule.id} className="friend-schedule-card">
                 <div className="friend-username">{schedule.username}</div>
