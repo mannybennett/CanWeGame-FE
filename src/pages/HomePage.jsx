@@ -1,12 +1,20 @@
 import { useState, useEffect } from "react"
 import { Search, Plus, Menu, X, ArrowRight } from "lucide-react"
-import "../styles/HomePage.css";
+import "../styles/HomePage.css"
 
 export default function HomePage() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [showUserDropdown, setShowUserDropdown] = useState(false)
   const [showMobileMenu, setShowMobileMenu] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
+  const [showScheduleModal, setShowScheduleModal] = useState(false)
+  const [gameTitle, setGameTitle] = useState("")
+  const [startTime, setStartTime] = useState("12:00")
+  const [startPeriod, setStartPeriod] = useState("PM")
+  const [endTime, setEndTime] = useState("12:00")
+  const [endPeriod, setEndPeriod] = useState("PM")
+  const [selectedDays, setSelectedDays] = useState([])
+  const [isWeekly, setIsWeekly] = useState(false)
 
   // Mock user data - replace with actual user data
   const currentUser = {
@@ -21,28 +29,7 @@ export default function HomePage() {
       game: "Call of Duty",
       timeRange: "7pm - 11pm",
       dateRange: "Mon-Wed",
-    },
-    {
-      id: 2,
-      username: "BobPlayer",
-      game: "Fortnite",
-      timeRange: "5pm - 8pm",
-      dateRange: "Tue-Thu",
-    },
-    {
-      id: 3,
-      username: "CharliePro",
-      game: "Valorant",
-      timeRange: "6pm - 10pm",
-      dateRange: "Fri-Sun",
-    },
-    {
-      id: 4,
-      username: "DianaGaming",
-      game: "Apex Legends",
-      timeRange: "8pm - 12am",
-      dateRange: "Wed-Sat",
-    },
+    }
   ]
 
   useEffect(() => {
@@ -87,8 +74,47 @@ export default function HomePage() {
 
   const handleAddSchedule = () => {
     console.log("Adding new schedule...")
-    // Implement add schedule functionality here
+    setShowScheduleModal(true)
     setShowMobileMenu(false)
+  }
+
+  const handleCloseModal = () => {
+    setShowScheduleModal(false)
+    // Reset form
+    setGameTitle("")
+    setStartTime("12:00")
+    setStartPeriod("PM")
+    setEndTime("12:00")
+    setEndPeriod("PM")
+    setSelectedDays([])
+    setIsWeekly(false)
+  }
+
+  const handleSubmitSchedule = (e) => {
+    e.preventDefault()
+    console.log("Schedule submitted:", {
+      gameTitle,
+      startTime: `${startTime} ${startPeriod}`,
+      endTime: `${endTime} ${endPeriod}`,
+      selectedDays,
+      isWeekly,
+    })
+    handleCloseModal()
+  }
+
+  const toggleDay = (day) => {
+    setSelectedDays((prev) => (prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]))
+  }
+
+  const generateTimeOptions = () => {
+    const times = []
+    for (let hour = 1; hour <= 12; hour++) {
+      for (let minute = 0; minute < 60; minute += 15) {
+        const timeString = `${hour}:${minute.toString().padStart(2, "0")}`
+        times.push(timeString)
+      }
+    }
+    return times
   }
 
   const getUserInitial = (username) => {
@@ -209,7 +235,7 @@ export default function HomePage() {
 
       {/* Mobile Menu Overlay */}
       {showMobileMenu && <div className="mobile-menu-overlay" onClick={() => setShowMobileMenu(false)} />}
-      
+
       {/* Main Content */}
       <main className="main-content">
         {/* Your Schedules Section */}
@@ -238,6 +264,116 @@ export default function HomePage() {
           </div>
         </section>
       </main>
+      {/* Schedule Modal */}
+      {showScheduleModal && (
+        <>
+          <div className="modal-overlay" onClick={handleCloseModal} />
+          <div className="schedule-modal">
+            <div className="modal-content">
+              <button className="modal-close" onClick={handleCloseModal}>
+                <X size={24} />
+              </button>
+
+              <h2 className="modal-title">Add Schedule</h2>
+
+              <form onSubmit={handleSubmitSchedule} className="schedule-form">
+                {/* Game Title Input */}
+                <div className="form-group">
+                  <label className="form-label">Game Title</label>
+                  <input
+                    type="text"
+                    value={gameTitle}
+                    onChange={(e) => setGameTitle(e.target.value)}
+                    className="form-input"
+                    required
+                  />
+                </div>
+
+                {/* Time Inputs */}
+                <div className="form-group">
+                  <label className="form-label">Time</label>
+                  <div className="time-inputs">
+                    <div className="time-input-group">
+                      <select value={startTime} onChange={(e) => setStartTime(e.target.value)} className="time-select">
+                        {generateTimeOptions().map((time) => (
+                          <option key={time} value={time}>
+                            {time}
+                          </option>
+                        ))}
+                      </select>
+                      <select
+                        value={startPeriod}
+                        onChange={(e) => setStartPeriod(e.target.value)}
+                        className="period-select"
+                      >
+                        <option value="AM">AM</option>
+                        <option value="PM">PM</option>
+                      </select>
+                    </div>
+
+                    <span className="time-separator">to</span>
+
+                    <div className="time-input-group">
+                      <select value={endTime} onChange={(e) => setEndTime(e.target.value)} className="time-select">
+                        {generateTimeOptions().map((time) => (
+                          <option key={time} value={time}>
+                            {time}
+                          </option>
+                        ))}
+                      </select>
+                      <select
+                        value={endPeriod}
+                        onChange={(e) => setEndPeriod(e.target.value)}
+                        className="period-select"
+                      >
+                        <option value="AM">AM</option>
+                        <option value="PM">PM</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Days Selection */}
+                <div className="form-group">
+                  <label className="form-label">Days</label>
+                  <div className="days-buttons">
+                    {["M", "T", "Wed", "Thu", "F", "Sat", "Sun"].map((day) => (
+                      <button
+                        key={day}
+                        type="button"
+                        onClick={() => toggleDay(day)}
+                        className={`day-button ${selectedDays.includes(day) ? "selected" : ""}`}
+                      >
+                        {day}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Weekly Checkbox */}
+                <div className="form-group">
+                  <label className="checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={isWeekly}
+                      onChange={(e) => setIsWeekly(e.target.checked)}
+                      className="weekly-checkbox"
+                    />
+                    <span className="checkbox-text">Weekly</span>
+                  </label>
+                </div>
+
+                {/* Submit Button */}
+                <div className="form-actions">
+                  <button type="submit" className="submit-button">
+                    Add Schedule
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   )
-};
+}
