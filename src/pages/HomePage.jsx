@@ -10,10 +10,9 @@ export default function HomePage() {
   const [showScheduleModal, setShowScheduleModal] = useState(false)
   const [gameTitle, setGameTitle] = useState("")
   const [startTime, setStartTime] = useState("12:00")
-  const [startPeriod, setStartPeriod] = useState("PM")
   const [endTime, setEndTime] = useState("12:00")
-  const [endPeriod, setEndPeriod] = useState("PM")
   const [selectedDays, setSelectedDays] = useState([])
+  const [description, setDescription] = useState("")
   const [isWeekly, setIsWeekly] = useState(false)
 
   // Mock user data - replace with actual user data
@@ -83,38 +82,34 @@ export default function HomePage() {
     // Reset form
     setGameTitle("")
     setStartTime("12:00")
-    setStartPeriod("PM")
     setEndTime("12:00")
-    setEndPeriod("PM")
     setSelectedDays([])
+    setDescription("")
     setIsWeekly(false)
-  }
+  };
 
   const handleSubmitSchedule = (e) => {
     e.preventDefault()
-    console.log("Schedule submitted:", {
-      gameTitle,
-      startTime: `${startTime} ${startPeriod}`,
-      endTime: `${endTime} ${endPeriod}`,
-      selectedDays,
-      isWeekly,
-    })
+    const scheduleData = {
+      GameTitle: gameTitle,
+      StartTime: startTime, // Already in HH:mm format for TimeOnly
+      EndTime: endTime, // Already in HH:mm format for TimeOnly
+      DaysOfWeek: selectedDays,
+      Description: description, // Optional field
+      Weekly: isWeekly,
+    }
+    console.log("Schedule data for API:", scheduleData)
+    // Here you would make your API call:
+    // await fetch('/api/schedules', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify(scheduleData)
+    // })
     handleCloseModal()
   }
 
   const toggleDay = (day) => {
     setSelectedDays((prev) => (prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]))
-  }
-
-  const generateTimeOptions = () => {
-    const times = []
-    for (let hour = 1; hour <= 12; hour++) {
-      for (let minute = 0; minute < 60; minute += 15) {
-        const timeString = `${hour}:${minute.toString().padStart(2, "0")}`
-        times.push(timeString)
-      }
-    }
-    return times
   }
 
   const getUserInitial = (username) => {
@@ -292,43 +287,28 @@ export default function HomePage() {
                 {/* Time Inputs */}
                 <div className="form-group">
                   <label className="form-label">Time</label>
-                  <div className="time-inputs">
-                    <div className="time-input-group">
-                      <select value={startTime} onChange={(e) => setStartTime(e.target.value)} className="time-select">
-                        {generateTimeOptions().map((time) => (
-                          <option key={time} value={time}>
-                            {time}
-                          </option>
-                        ))}
-                      </select>
-                      <select
-                        value={startPeriod}
-                        onChange={(e) => setStartPeriod(e.target.value)}
-                        className="period-select"
-                      >
-                        <option value="AM">AM</option>
-                        <option value="PM">PM</option>
-                      </select>
+                  <div className="time-inputs-simple">
+                    <div className="time-input-wrapper">
+                      <label className="time-input-label">Start</label>
+                      <input
+                        type="time"
+                        value={startTime}
+                        onChange={(e) => setStartTime(e.target.value)}
+                        className="time-input-native"
+                        step="900"
+                        required
+                      />
                     </div>
-
-                    <span className="time-separator">to</span>
-
-                    <div className="time-input-group">
-                      <select value={endTime} onChange={(e) => setEndTime(e.target.value)} className="time-select">
-                        {generateTimeOptions().map((time) => (
-                          <option key={time} value={time}>
-                            {time}
-                          </option>
-                        ))}
-                      </select>
-                      <select
-                        value={endPeriod}
-                        onChange={(e) => setEndPeriod(e.target.value)}
-                        className="period-select"
-                      >
-                        <option value="AM">AM</option>
-                        <option value="PM">PM</option>
-                      </select>
+                    <div className="time-input-wrapper">
+                      <label className="time-input-label">End</label>
+                      <input
+                        type="time"
+                        value={endTime}
+                        onChange={(e) => setEndTime(e.target.value)}
+                        className="time-input-native"
+                        step="900"
+                        required
+                      />
                     </div>
                   </div>
                 </div>
@@ -337,7 +317,7 @@ export default function HomePage() {
                 <div className="form-group">
                   <label className="form-label">Days</label>
                   <div className="days-buttons">
-                    {["M", "T", "Wed", "Thu", "F", "Sat", "Sun"].map((day) => (
+                    {["M", "T", "W", "Thu", "F", "Sat", "Sun"].map((day) => (
                       <button
                         key={day}
                         type="button"
@@ -348,6 +328,19 @@ export default function HomePage() {
                       </button>
                     ))}
                   </div>
+                </div>
+
+                {/* Description Input */}
+                <div className="form-group">
+                  <label className="form-label">Description (Optional)</label>
+                  <textarea
+                    value={description}
+                    maxLength="50"
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="form-textarea"
+                    placeholder="Add any additional details about your gaming session..."
+                    rows={3}
+                  />
                 </div>
 
                 {/* Weekly Checkbox */}
