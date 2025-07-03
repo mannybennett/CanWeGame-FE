@@ -366,7 +366,7 @@ export default function HomePage() {
                 {/* Submit Button */}
                 <div className="form-actions">
                   <button type="submit" className="submit-button">
-                    Add Schedule
+                    Submit
                   </button>
                 </div>
               </form>
