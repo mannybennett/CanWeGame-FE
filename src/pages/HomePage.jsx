@@ -3,17 +3,17 @@ import { Search, Plus, Menu, X, ArrowRight } from "lucide-react"
 import "../styles/HomePage.css"
 
 export default function HomePage() {
-  const [isScrolled, setIsScrolled] = useState(false)
-  const [showUserDropdown, setShowUserDropdown] = useState(false)
-  const [showMobileMenu, setShowMobileMenu] = useState(false)
-  const [searchQuery, setSearchQuery] = useState("")
-  const [showScheduleModal, setShowScheduleModal] = useState(false)
-  const [gameTitle, setGameTitle] = useState("")
-  const [startTime, setStartTime] = useState("12:00")
-  const [endTime, setEndTime] = useState("12:00")
-  const [selectedDays, setSelectedDays] = useState([])
-  const [description, setDescription] = useState("")
-  const [isWeekly, setIsWeekly] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [showUserDropdown, setShowUserDropdown] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [gameTitle, setGameTitle] = useState("");
+  const [startTime, setStartTime] = useState("12:00");
+  const [endTime, setEndTime] = useState("12:00");
+  const [selectedDays, setSelectedDays] = useState([]);
+  const [description, setDescription] = useState("");
+  const [isWeekly, setIsWeekly] = useState(false);
 
   // Mock user data - replace with actual user data
   const currentUser = {
