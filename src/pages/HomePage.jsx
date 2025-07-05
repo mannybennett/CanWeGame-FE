@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
 import { Search, Plus, Menu, X, ArrowRight } from "lucide-react"
+import useSchedules from "../hooks/useSchedules";
 import "../styles/HomePage.css"
 
 export default function HomePage() {
@@ -14,6 +15,9 @@ export default function HomePage() {
   const [selectedDays, setSelectedDays] = useState([]);
   const [description, setDescription] = useState("");
   const [isWeekly, setIsWeekly] = useState(false);
+
+  // Use the useSchedules hook to access context values
+  const { createSchedule, isCreatingSchedule } = useSchedules();
 
   // Mock user data - replace with actual user data
   const currentUser = {
@@ -72,7 +76,6 @@ export default function HomePage() {
   }
 
   const handleAddSchedule = () => {
-    console.log("Adding new schedule...")
     setShowScheduleModal(true)
     setShowMobileMenu(false)
   }
@@ -88,25 +91,25 @@ export default function HomePage() {
     setIsWeekly(false)
   };
 
-  const handleSubmitSchedule = (e) => {
-    e.preventDefault()
+  const handleSubmitSchedule = async (e) => {
+    e.preventDefault();
     const scheduleData = {
       GameTitle: gameTitle,
-      StartTime: startTime, // Already in HH:mm format for TimeOnly
-      EndTime: endTime, // Already in HH:mm format for TimeOnly
+      StartTime: startTime,
+      EndTime: endTime,
       DaysOfWeek: selectedDays,
-      Description: description, // Optional field
+      Description: description,
       Weekly: isWeekly,
+    };
+    try {
+      await createSchedule(scheduleData); // Call the function from the hook
+      alert("Schedule created successfully!");
+      handleCloseModal();
+    } catch (error) {
+      console.error("Error submitting schedule:", error);
+      alert("Failed to create schedule. Please try again.");
     }
-    console.log("Schedule data for API:", scheduleData)
-    // Here you would make your API call:
-    // await fetch('/api/schedules', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify(scheduleData)
-    // })
-    handleCloseModal()
-  }
+  };
 
   const toggleDay = (day) => {
     setSelectedDays((prev) => (prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]))
@@ -358,7 +361,7 @@ export default function HomePage() {
 
                 {/* Submit Button */}
                 <div className="form-actions">
-                  <button type="submit" className="submit-button">
+                  <button type="submit" className="submit-button" disabled={isCreatingSchedule}>
                     Submit
                   </button>
                 </div>

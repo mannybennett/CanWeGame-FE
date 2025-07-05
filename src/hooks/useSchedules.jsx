@@ -1,96 +1,24 @@
-import { useState, useEffect, useCallback } from 'react';
-import scheduleService from '../services/scheduleService'; // Import the schedule service
+import { useContext } from 'react';
+import { ScheduleContext } from '../context/ScheduleContext.jsx'; // Import the ScheduleContext
 
+/**
+ * Custom hook to access gaming schedule data and actions from the ScheduleContext.
+ * This hook simplifies consuming the ScheduleContext, making components cleaner.
+ *
+ * @returns {object} An object containing schedule data, loading/error states,
+ * and functions to interact with schedules (create, update, delete, fetch).
+ */
 const useSchedules = () => {
-  const [schedules, setSchedules] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [isCreating, setIsCreating] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
+    // Use useContext to get the value provided by the ScheduleContext.Provider
+    const context = useContext(ScheduleContext);
 
-  const fetchMySchedules = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await scheduleService.getMySchedules();
-      setSchedules(response.data);
-    } catch (err) {
-      console.error("Failed to fetch schedules:", err);
-      setError(err);
-    } finally {
-      setLoading(false);
+    // Optional: Add a check to ensure the hook is used within a Provider
+    if (context === undefined) {
+        throw new Error('useSchedules must be used within a ScheduleProvider');
     }
-  }, []);
 
-  useEffect(() => {
-    fetchMySchedules();
-  }, [fetchMySchedules]);
-
-  const createSchedule = async (scheduleData) => {
-    setIsCreating(true);
-    setError(null);
-    try {
-      const response = await scheduleService.createSchedule(scheduleData);
-      // Optionally add the new schedule to the state directly or refetch
-      // For consistency and to ensure server-side state is reflected, refetch is safer
-      await fetchMySchedules();
-      return response.data; // Return the created schedule data if needed
-    } catch (err) {
-      console.error("Failed to create schedule:", err);
-      setError(err);
-      throw err; // Re-throw to allow component to handle specific UI for creation error
-    } finally {
-      setIsCreating(false);
-    }
-  };
-
-  const updateSchedule = async (scheduleId, updatedScheduleData) => {
-    setIsUpdating(true);
-    setError(null);
-    try {
-      const response = await scheduleService.updateSchedule(scheduleId, updatedScheduleData);
-      await fetchMySchedules(); // Refetch to ensure state consistency
-      return response.data; // Return updated schedule data
-    } catch (err) {
-      console.error(`Failed to update schedule ${scheduleId}:`, err);
-      setError(err);
-      throw err;
-    } finally {
-      setIsUpdating(false);
-    }
-  };
-
-  const deleteSchedule = async (scheduleId) => {
-      setIsDeleting(true);
-      setError(null);
-      try {
-        await scheduleService.deleteSchedule(scheduleId);
-        // Optimistically remove from state or refetch
-        // For simplicity and consistency with add/update, let's refetch
-        await fetchMySchedules();
-        return true;
-      } catch (err) {
-        console.error(`Failed to delete schedule ${scheduleId}:`, err);
-        setError(err);
-          throw err;
-      } finally {
-        setIsDeleting(false);
-      }
-  };
-
-  return {
-    schedules,
-    loading,
-    error,
-    isCreating,
-    isUpdating,
-    isDeleting,
-    fetchMySchedules, // For manual refresh
-    createSchedule,
-    updateSchedule,
-    deleteSchedule,
-  };
+    // Return all the values that the ScheduleContext.Provider makes available
+    return context;
 };
 
 export default useSchedules;
