@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useContext } from "react";
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from "../context/AuthContext";
+import useAuth from "../hooks/useAuth.jsx";
 import { Eye, EyeOff } from "lucide-react";
 import "../styles/LandingPage.css";
 // import ShipAnimation from "../components/ShipAnimation";
@@ -8,7 +8,7 @@ import "../styles/LandingPage.css";
 export default function LandingPage() {
   const navigate = useNavigate();
   // Destructure login, register, isAuthenticated, and loadingAuth from AuthContext
-  const { login, register, isAuthenticated, loadingAuth } = useContext(AuthContext);
+  const { login, register, isAuthenticated, loadingAuth, user } = useAuth();
 
   // refs
   const logoRef = useRef(null);
