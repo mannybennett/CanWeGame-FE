@@ -1,42 +1,60 @@
 import { useState, useRef, useEffect, useContext } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
 import { AuthContext } from "../context/AuthContext";
+import { Eye, EyeOff } from "lucide-react";
 import "../styles/LandingPage.css";
 // import ShipAnimation from "../components/ShipAnimation";
 
 export default function LandingPage() {
-  const { login, register } = useContext(AuthContext);
+  const navigate = useNavigate();
+  // Destructure login, register, isAuthenticated, and loadingAuth from AuthContext
+  const { login, register, isAuthenticated, loadingAuth } = useContext(AuthContext);
+
   // refs
   const logoRef = useRef(null);
-  const shipContainerRef = useRef(null);
+  const shipContainerRef = useRef(null); // This ref will be used for the animation container
   // Login/Register states
-  const [loginData, setLoginData] = useState({ username: "", password: "" })
-  const [registerData, setRegisterData] = useState({ email: "", username: "", password: "", confirmPassword: "" })
+  const [loginData, setLoginData] = useState({ username: "", password: "" });
+  const [registerData, setRegisterData] = useState({ email: "", username: "", password: "", confirmPassword: "" });
   // Password visibility states
-  const [showLoginPassword, setShowLoginPassword] = useState(false)
-  const [showRegisterPassword, setShowRegisterPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [showRegisterPassword, setShowRegisterPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   // Mobile swipe functionality
-  const [currentForm, setCurrentForm] = useState(0) // 0 for login, 1 for register
-  const [isMobile, setIsMobile] = useState(false)
-  const touchStartX = useRef(0)
-  const touchEndX = useRef(0)
-  const containerRef = useRef(null)
+  const [currentForm, setCurrentForm] = useState(0); // 0 for login, 1 for register
+  const [isMobile, setIsMobile] = useState(false);
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+  const containerRef = useRef(null); // Assuming this refers to the main auth form container for swipe
 
+  // New states for displaying login/register errors
+  const [loginError, setLoginError] = useState(null);
+  const [registerError, setRegisterError] = useState(null);
+
+  // --- Effect for Automatic Redirection on Authentication Status Change ---
+  useEffect(() => {
+    // Only attempt to navigate if authentication status has been determined
+    if (!loadingAuth && isAuthenticated) {
+      navigate('/home', { replace: true }); // Redirect to home page
+    }
+  }, [isAuthenticated, loadingAuth, navigate]); // Dependencies: re-run when these values change
+
+  // --- Existing Effects ---
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 1024) // lg breakpoint
-    }
+      setIsMobile(window.innerWidth < 1024); // lg breakpoint
+    };
 
-    checkMobile()
-    window.addEventListener("resize", checkMobile)
-    return () => window.removeEventListener("resize", checkMobile)
-  }, [])
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   useEffect(() => {
     const updateWidth = () => {
       if (logoRef.current && shipContainerRef.current) {
         const logoWidth = logoRef.current.offsetWidth;
+        // Set the width of the ship animation container to match the logo container
         shipContainerRef.current.style.width = `${logoWidth}px`;
       }
     };
@@ -47,62 +65,111 @@ export default function LandingPage() {
   }, []);
 
 
+  // --- Existing Touch Handlers ---
   const handleTouchStart = (e) => {
-    touchStartX.current = e.targetTouches[0].clientX
-  }
+    touchStartX.current = e.targetTouches[0].clientX;
+  };
 
   const handleTouchMove = (e) => {
-    touchEndX.current = e.targetTouches[0].clientX
-  }
+    touchEndX.current = e.targetTouches[0].clientX;
+  };
 
   const handleTouchEnd = () => {
-    if (!touchStartX.current || !touchEndX.current) return
+    if (!touchStartX.current || !touchEndX.current) return;
 
-    const distance = touchStartX.current - touchEndX.current
-    const isLeftSwipe = distance > 50
-    const isRightSwipe = distance < -50
+    const distance = touchStartX.current - touchEndX.current;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
 
     if (isLeftSwipe && currentForm === 0) {
-      setCurrentForm(1) // Switch to register
+      setCurrentForm(1); // Switch to register
     }
     if (isRightSwipe && currentForm === 1) {
-      setCurrentForm(0) // Switch to login
+      setCurrentForm(0); // Switch to login
     }
-  }
-
-  const handleLoginSubmit = (e) => {
-    e.preventDefault();
-    login(loginData.username, loginData.password);
-    console.log("Login submitted:", loginData);
+    // Reset touch coordinates
+    touchStartX.current = 0;
+    touchEndX.current = 0;
   };
 
-  const handleRegisterSubmit = (e) => {
+  // --- Updated Submit Handlers to use AuthContext and handle errors ---
+  const handleLoginSubmit = async (e) => { // Made async
     e.preventDefault();
+    setLoginError(null); // Clear previous errors
+    try {
+      const success = await login(loginData.username, loginData.password);
+      if (!success) {
+        // If login function returns false (indicating failure, but no error thrown)
+        setLoginError("Login failed. Please check your credentials.");
+      }
+      // If login is successful, the useEffect above will handle the navigation to /home
+    } catch (error) {
+      // Catch errors thrown by the login function (e.g., network error, API error response)
+      console.error("Login submission error:", error);
+      // Display a more user-friendly error message from the backend if available
+      setLoginError(error.response?.data?.message || "An unexpected error occurred during login. Please try again.");
+    }
+  };
+
+  const handleRegisterSubmit = async (e) => { // Made async
+    e.preventDefault();
+    setRegisterError(null); // Clear previous errors
     const { email, username, password, confirmPassword } = registerData;
+
     if (password !== confirmPassword) {
-      console.error("Passwords do not match!");
-      // display message on UI
-      return;
-    };
-    const confirmedData = { email, username, password }; 
-    register(confirmedData);
-    console.log("Register submitted:", confirmedData);
+      setRegisterError("Passwords do not match!");
+      return; // Stop submission
+    }
+
+    const confirmedData = { email, username, password }; // Data to send to register API
+
+    try {
+      // Assuming your register function takes email, username, password
+      const success = await register(confirmedData); // Adjust parameters based on your register function in AuthContext
+      if (success) {
+        alert('Registration successful! Please log in.');
+        setCurrentForm(0); // Switch to login form after successful registration
+        // Clear form fields for login
+        setLoginData({ username: username, password: "" }); // Pre-fill username for convenience
+        setRegisterData({ email: "", username: "", password: "", confirmPassword: "" });
+      } else {
+        // This path might be hit if register returns false without throwing
+        setRegisterError("Registration failed. Please try again.");
+      }
+    } catch (error) {
+      // Catch errors thrown by the register function
+      console.error("Register submission error:", error);
+      setRegisterError(error.response?.data?.message || "An unexpected error occurred during registration. Please try again.");
+    }
   };
 
+  // --- Existing Password Visibility Toggle ---
   const togglePasswordVisibility = (field) => {
     switch (field) {
       case "login":
-        setShowLoginPassword(!showLoginPassword)
-        break
+        setShowLoginPassword(!showLoginPassword);
+        break;
       case "register":
-        setShowRegisterPassword(!showRegisterPassword)
-        break
+        setShowRegisterPassword(!showRegisterPassword);
+        break;
       case "confirm":
-        setShowConfirmPassword(!showConfirmPassword)
-        break
+        setShowConfirmPassword(!showConfirmPassword);
+        break;
       default:
-        break
+        break;
     }
+  };
+
+  // --- Loading State for Initial Authentication Check ---
+  // This is crucial to prevent the login/register forms from flashing
+  // before the AuthContext determines if the user is already authenticated.
+  if (loadingAuth) {
+    return (
+      <div className="landing-page-loading-overlay">
+        <p>Loading application...</p>
+        {/* Add a spinner or more elaborate loading UI here */}
+      </div>
+    );
   }
 
   return (
@@ -200,6 +267,7 @@ export default function LandingPage() {
                             </button>
                           </div>
                         </div>
+                        {loginError && <p className="error-message">{loginError}</p>}
                         <button type="submit" className="submit-button">
                           Login
                         </button>
@@ -290,6 +358,7 @@ export default function LandingPage() {
                             </button>
                           </div>
                         </div>
+                        {registerError && <p className="error-message">{registerError}</p>}
                         <button type="submit" className="submit-button">
                           Register
                         </button>
@@ -350,6 +419,7 @@ export default function LandingPage() {
                         </button>
                       </div>
                     </div>
+                    {loginError && <p className="error-message">{loginError}</p>}
                     <button type="submit" className="submit-button">
                       Login
                     </button>
@@ -443,6 +513,7 @@ export default function LandingPage() {
                         </button>
                       </div>
                     </div>
+                    {registerError && <p className="error-message">{registerError}</p>}
                     <button type="submit" className="submit-button">
                       Register
                     </button>
