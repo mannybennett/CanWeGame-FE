@@ -17,7 +17,7 @@
 
 .navbar-content {
   height: 100%;
-  max-width: 80%;
+  /* max-width: 1300px; */
   display: flex;
   padding: 1rem;
   margin: 0 auto;
@@ -25,7 +25,7 @@
 }
 
 .navbar-left {
-  width: 33.3%;
+  /* width: 33.3%; */
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -56,7 +56,8 @@
 }
 
 .navbar-center {
-  width: 33.4%;
+  /* width: 33.4%; */
+  flex: 1;
   margin: 0 2rem;
 }
 
@@ -110,7 +111,7 @@
 }
 
 .navbar-right {
-  width: 33.3%;
+  /* width: 33.3%; */
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -339,7 +340,10 @@
 }
 
 .schedules-section {
+  width: 100%;
+  padding: 5px;
   margin-bottom: 3rem;
+  overflow-x: auto;
 }
 
 .section-title {
@@ -389,10 +393,10 @@
 .friend-schedule-card {
   width: 200px;
   height: 200px;
-  background: linear-gradient(135deg, #b667ff 0%, #9333ea 100%);
+  border: 2px solid #9333ea;
   border-radius: 0.5rem;
   padding: 0.75rem;
-  color: white;
+  color: #111827;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -448,7 +452,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 770px) {
   .navbar-content {
     justify-content: space-between;
   }

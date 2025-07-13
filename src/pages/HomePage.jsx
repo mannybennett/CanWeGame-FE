@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { Search, Plus, Menu, X, ArrowRight } from "lucide-react"
 import useSchedules from "../hooks/useSchedules";
+import useAuth from "../hooks/useAuth";
 import "../styles/HomePage.css"
 
 export default function HomePage() {
@@ -16,13 +17,9 @@ export default function HomePage() {
   const [description, setDescription] = useState("");
   const [isWeekly, setIsWeekly] = useState(false);
 
-  // Use the useSchedules hook to access context values
+  // Use the useAuth & useSchedules hooks to access context values
+  const { user, loadingAuth } = useAuth();
   const { createSchedule, isCreatingSchedule } = useSchedules();
-
-  // Mock user data - replace with actual user data
-  const currentUser = {
-    username: "JohnDoe",
-  }
 
   // Mock friends schedules data
   const friendsSchedules = [
@@ -116,7 +113,7 @@ export default function HomePage() {
   }
 
   const getUserInitial = (username) => {
-    return username ? username.charAt(0).toUpperCase() : "U"
+    return username ? username.charAt(0).toUpperCase() : "?"
   }
 
   return (
@@ -160,7 +157,7 @@ export default function HomePage() {
             </button>
             <div className="user-dropdown-container desktop-only">
               <button className="user-icon" onClick={() => setShowUserDropdown(!showUserDropdown)}>
-                {getUserInitial(currentUser.username)}
+                {getUserInitial(user?.username)}
               </button>
               {showUserDropdown && (
                 <div className="user-dropdown">
@@ -218,8 +215,8 @@ export default function HomePage() {
           {/* User Options */}
           <div className="mobile-user-section">
             <div className="mobile-user-info">
-              <div className="user-icon mobile-user-icon">{getUserInitial(currentUser.username)}</div>
-              <span className="username">{currentUser.username}</span>
+              <div className="user-icon mobile-user-icon">{getUserInitial(user?.username)}</div>
+              <span className="username">{user?.username}</span>
             </div>
             <button onClick={handleAccountDetails} className="mobile-menu-item">
               Account Details
@@ -335,7 +332,7 @@ export default function HomePage() {
 
                 {/* Description Input */}
                 <div className="form-group">
-                  <label className="form-label">Description (Optional)</label>
+                  <label className="form-label">Description (optional)</label>
                   <textarea
                     value={description}
                     maxLength="50"

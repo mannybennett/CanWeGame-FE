@@ -1,14 +1,10 @@
-// src/context/ScheduleContext.jsx
 import { createContext, useState, useEffect, useCallback, useContext } from 'react';
-import scheduleService from '../services/scheduleService'; // Import your schedule service
-import { AuthContext } from './AuthContext'; // To potentially trigger re-fetch on auth changes, or use userId
+import scheduleService from '../services/scheduleService';
+import { AuthContext } from './AuthContext';
 
-// Create the Schedule Context
 const ScheduleContext = createContext();
 
-// Schedule Provider Component
 const ScheduleProvider = ({ children }) => {
-    // State for the list of schedules
     const [schedules, setSchedules] = useState([]);
 
     // States for loading and error handling for different operations
@@ -52,12 +48,6 @@ const ScheduleProvider = ({ children }) => {
 
 
     // --- CRUD Operations ---
-
-    /**
-     * Creates a new gaming schedule.
-     * @param {object} scheduleData - The data for the new schedule (StartTime, EndTime, DaysOfWeek).
-     * @returns {Promise<object|boolean>} The created schedule object on success, or false on failure.
-     */
     const createSchedule = async (scheduleData) => {
         setIsCreatingSchedule(true);
         setSchedulesError(null);

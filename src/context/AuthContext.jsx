@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import authService from '../services/authService';
+import userService from '../services/userService';
 
 const AuthContext = createContext();
 
@@ -12,25 +13,47 @@ const AuthProvider = ({ children }) => {
 
 	// Set up Axios interceptor to automatically add JWT to requests
 	useEffect(() => {
-		if (token) {
-			axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+		const initializeAuth = async () => {
+			if (token) {
+				axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+				try {
+					const payload = JSON.parse(atob(token.split('.')[1]));
 
-			// ***Optional: Decode token to get basic user info, or fetch from a /me endpoint
-			try {
-				//fetch user details
-				// You might have a /api/User/me endpoint that returns current user's profile
-				// api.get('/User/me').then(res => setUser(res.data)).catch(() => logout());
-				setUser({ username: "Logged In User" }); // Placeholder
-			} catch (e) {
-					console.error("Failed to decode token or fetch user data:", e);
-					logout(); // If token is invalid, log out
+					// Use the full URI for the nameidentifier claim
+					const userIdClaimName = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier";
+					const userIdFromToken = payload[userIdClaimName]; // Access using bracket notation for string key
+
+					// Optional: You also have 'sub' claim with the username, which might be useful for 'user.username'
+					// const usernameFromToken = payload.sub;
+
+
+					if (userIdFromToken) {
+						// Ensure userIdFromToken is parsed as an integer if your backend expects int
+						const parsedUserId = parseInt(userIdFromToken, 10);
+
+						// Use the parsedUserId to fetch the user's full profile
+						const response = await userService.getUserById(parsedUserId);
+						setUser(response.data); // Set the user state with the fetched data
+						setIsAuthenticated(true);
+					} else {
+						console.error("User ID claim (nameidentifier) not found in JWT payload.");
+						logout();
+					}
+
+				} catch (e) {
+					console.error("Failed to decode token, fetch user data, or token invalid:", e);
+					logout();
+				}
+			} else {
+				delete axios.defaults.headers.common['Authorization'];
+				setUser(null);
+				setIsAuthenticated(false);
 			}
-		} else {
-			delete axios.defaults.headers.common['Authorization'];
-			setUser(null);
-		}
-		setLoadingAuth(false); // Auth check complete
-	}, [token]);
+			setLoadingAuth(false);
+		};
+
+		initializeAuth();
+    }, [token]);
 
 	const login = async (username, password) => {
 		setLoadingAuth(true); // Indicate that login is in progress

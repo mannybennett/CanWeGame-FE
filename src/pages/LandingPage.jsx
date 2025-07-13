@@ -121,7 +121,7 @@ export default function LandingPage() {
       return; // Stop submission
     }
 
-    const confirmedData = { email, username, password }; // Data to send to register API
+    const confirmedData = { email, username, password };
 
     try {
       // Assuming your register function takes email, username, password
