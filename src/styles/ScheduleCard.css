@@ -1,0 +1,72 @@
+.schedule-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: transform 0.2s ease-in-out;
+}
+
+.schedule-card:hover {
+  transform: translateY(-3px);
+}
+
+.schedule-username {
+  font-size: 0.9rem;
+  color: #6b7280; /* Tailwind gray-500 */
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.schedule-game-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #1f2937; /* Tailwind gray-800 */
+  margin-bottom: 0.5rem;
+}
+
+.schedule-time,
+.schedule-days,
+.schedule-type,
+.schedule-description {
+  font-size: 0.95rem;
+  color: #374151; /* Tailwind gray-700 */
+}
+
+.schedule-actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end; /* Align buttons to the right */
+}
+
+.schedule-edit-button,
+.schedule-delete-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.schedule-edit-button {
+  background-color: #e0e7ff; /* Tailwind indigo-100 */
+  color: #4f46e5; /* Tailwind indigo-600 */
+}
+
+.schedule-edit-button:hover {
+  background-color: #c7d2fe; /* Tailwind indigo-200 */
+}
+
+.schedule-delete-button {
+  background-color: #fee2e2; /* Tailwind red-100 */
+  color: #ef4444; /* Tailwind red-600 */
+}
+
+.schedule-delete-button:hover {
+  background-color: #fecaca; /* Tailwind red-200 */
+}

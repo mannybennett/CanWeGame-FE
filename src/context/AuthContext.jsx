@@ -6,34 +6,36 @@ import userService from '../services/userService';
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
-	const [user, setUser] = useState(null);
+	const [user, setUser] = useState(null); // This will now include friends
 	const [token, setToken] = useState(localStorage.getItem('jwtToken'));
 	const [isAuthenticated, setIsAuthenticated] = useState(!!token);
 	const [loadingAuth, setLoadingAuth] = useState(true);
 
-	// Set up Axios interceptor to automatically add JWT to requests
 	useEffect(() => {
 		const initializeAuth = async () => {
 			if (token) {
 				axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 				try {
 					const payload = JSON.parse(atob(token.split('.')[1]));
-
-					// Use the full URI for the nameidentifier claim
 					const userIdClaimName = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier";
-					const userIdFromToken = payload[userIdClaimName]; // Access using bracket notation for string key
-
-					// Optional: You also have 'sub' claim with the username, which might be useful for 'user.username'
-					// const usernameFromToken = payload.sub;
-
+					const userIdFromToken = payload[userIdClaimName];
 
 					if (userIdFromToken) {
-						// Ensure userIdFromToken is parsed as an integer if your backend expects int
 						const parsedUserId = parseInt(userIdFromToken, 10);
 
-						// Use the parsedUserId to fetch the user's full profile
-						const response = await userService.getUserById(parsedUserId);
-						setUser(response.data); // Set the user state with the fetched data
+						// --- Fetch current user's profile ---
+						const userProfileResponse = await userService.getUserById(parsedUserId);
+						const currentUserProfile = userProfileResponse.data;
+
+						// --- Fetch current user's friends list ---
+						const friendsResponse = await userService.getMyFriends();
+						const currentUserFriends = friendsResponse.data;
+
+						// Combine user profile and friends into a single user object for context
+						setUser({
+								...currentUserProfile, // Spread existing user data (id, username, email, etc.)
+								friends: currentUserFriends // Add the friends list
+						});
 						setIsAuthenticated(true);
 					} else {
 						console.error("User ID claim (nameidentifier) not found in JWT payload.");
@@ -45,26 +47,23 @@ const AuthProvider = ({ children }) => {
 					logout();
 				}
 			} else {
-				delete axios.defaults.headers.common['Authorization'];
-				setUser(null);
-				setIsAuthenticated(false);
+					delete axios.defaults.headers.common['Authorization'];
+					setUser(null);
+					setIsAuthenticated(false);
 			}
 			setLoadingAuth(false);
 		};
 
 		initializeAuth();
-    }, [token]);
+	}, [token]);
 
 	const login = async (username, password) => {
-		setLoadingAuth(true); // Indicate that login is in progress
+		setLoadingAuth(true);
 		try {
-			const data = await authService.login(username, password); // <--- Use authService
+			const data = await authService.login(username, password);
 			const newToken = data.token;
 			localStorage.setItem('jwtToken', newToken);
-			setToken(newToken);
-			setIsAuthenticated(true);
-			// setUser based on token or another API call
-			// For now, we'll rely on the useEffect above to set `user`
+			setToken(newToken); // This will trigger the useEffect above to fetch user data and friends
 			return true;
 		} catch (error) {
 			console.error("Login process failed:", error);
@@ -91,18 +90,16 @@ const AuthProvider = ({ children }) => {
 		}
 	};
 
-
 	const logout = () => {
 		localStorage.removeItem('jwtToken');
 		setToken(null);
 		setIsAuthenticated(false);
 		setUser(null);
-		// Redirect to login page or home after logout, typically handled in a component
-	};
+};
 
 	return (
 		<AuthContext.Provider value={{ isAuthenticated, user, token, login, logout, register, loadingAuth }}>
-			{children}
+				{children}
 		</AuthContext.Provider>
 	);
 };

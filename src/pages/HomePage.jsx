@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { Search, Plus, Menu, X, ArrowRight } from "lucide-react"
 import useSchedules from "../hooks/useSchedules";
 import useAuth from "../hooks/useAuth";
+import ScheduleCard from "../components/ScheduleCard";
 import "../styles/HomePage.css"
 
 export default function HomePage() {
@@ -18,19 +19,18 @@ export default function HomePage() {
   const [isWeekly, setIsWeekly] = useState(false);
 
   // Use the useAuth & useSchedules hooks to access context values
-  const { user, loadingAuth } = useAuth();
-  const { createSchedule, isCreatingSchedule } = useSchedules();
-
-  // Mock friends schedules data
-  const friendsSchedules = [
-    {
-      id: 1,
-      username: "AliceGamer",
-      game: "Call of Duty",
-      timeRange: "7pm - 11pm",
-      dateRange: "Mon-Wed",
-    }
-  ]
+  const { user, loadingAuth, logout } = useAuth();
+  const {
+    mySchedules,
+    friendSchedules,
+    loadingMySchedules,
+    loadingFriendSchedules,
+    schedulesError,
+    isCreatingSchedule,
+    createSchedule,
+    updateSchedule,
+    deleteSchedule
+  } = useSchedules();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -105,6 +105,27 @@ export default function HomePage() {
     } catch (error) {
       console.error("Error submitting schedule:", error);
       alert("Failed to create schedule. Please try again.");
+    }
+  };
+
+  // Handlers for ScheduleCard actions (passed as props)
+  const handleEditMySchedule = (scheduleToEdit) => {
+    console.log("Editing schedule:", scheduleToEdit);
+    // You would typically open a modal/form pre-filled with scheduleToEdit data
+    // setEditingSchedule(scheduleToEdit); // You might have a state for this
+    // setShowScheduleModal(true); // Re-use the same modal, but for editing
+  };
+
+  const handleDeleteMySchedule = async (scheduleId) => {
+    const confirmed = window.confirm("Are you sure you want to delete this schedule?");
+    if (confirmed) {
+      try {
+        await deleteSchedule(scheduleId);
+        alert("Schedule deleted successfully!");
+      } catch (error) {
+        console.error("Error deleting schedule:", error);
+        alert("Failed to delete schedule. Please try again.");
+      }
     }
   };
 
@@ -242,20 +263,38 @@ export default function HomePage() {
             </div>
             <h3 className="add-schedule-text">Add Schedule</h3>
           </div>
+          {/* Render My Schedules */}
+          <div className="my-schedules-grid">
+            {mySchedules.length === 0 ? (
+              <p>You haven't created any schedules yet.</p>
+            ) : (
+              mySchedules.map((schedule) => (
+                <ScheduleCard
+                  key={schedule.id}
+                  schedule={schedule}
+                  onEdit={handleEditMySchedule} // Pass edit handler
+                  onDelete={handleDeleteMySchedule} // Pass delete handler
+                />
+              ))
+            )}
+          </div>
         </section>
 
         {/* Friends Schedules Section */}
         <section className="schedules-section">
           <h2 className="section-title">Friends Schedules</h2>
           <div className="friends-schedules-grid">
-            {friendsSchedules.map((schedule) => (
-              <div key={schedule.id} className="friend-schedule-card">
-                <div className="friend-username">{schedule.username}</div>
-                <div className="game-title">{schedule.game}</div>
-                <div className="time-range">{schedule.timeRange}</div>
-                <div className="date-range">{schedule.dateRange}</div>
-              </div>
-            ))}
+            {friendSchedules.length === 0 ? (
+              <p>Your friends haven't created any schedules yet.</p>
+            ) : (
+              friendSchedules.map((schedule) => (
+                <ScheduleCard
+                  key={schedule.id}
+                  schedule={schedule}
+                  // No onEdit or onDelete for friends' schedules, as they are not editable by current user
+                />
+              ))
+            )}
           </div>
         </section>
       </main>
